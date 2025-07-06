@@ -25,30 +25,44 @@ function eval_var(tokens)
         print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
         return
     end
-    
-    for i = 4, #tokens - 1 do
-        local token = tokens[i]
+
+    local is_single_token = (#tokens - 4 + 1) == 1
+    local token = tokens[4]
+
+    if is_single_token then
         if variables[token] ~= nil then
-            table.insert(expr_tokens, tostring(variables[token]))
+            variables[varName] = variables[token]
         else
             local num = tonumber(token)
             if num ~= nil then
-                table.insert(expr_tokens, token)
+                variables[varName] = num
             else
-                table.insert(expr_tokens, string.format("%q", token))
+                -- It's a literal string
+                variables[varName] = token
             end
         end
-    end
-
-    local expr = table.concat(expr_tokens, " ")
-    local chunk, err = load("return "..expr)
-    local suc, res = pcall(chunk)
-
-    if suc and res ~= nil then
-        variables[varName] = res
     else
-        print(" === Error on line "..line_count..": Invalid expression \""..expr.."\"")
-        return
+        for i = 4, #tokens - 1 do
+            local t = tokens[i]
+            if variables[t] ~= nil then
+                table.insert(expr_tokens, tostring(variables[t]))
+            else
+                table.insert(expr_tokens, t)
+            end
+        end
+
+        local expr = table.concat(expr_tokens, " ")
+        local chunk, err = load("return " .. expr)
+        if not chunk then
+            print(" === Error on line "..line_count..": Invalid expression \""..expr.."\"")
+            return
+        end
+        local ok, result = pcall(chunk)
+        if not ok or result == nil then
+            print(" === Error on line "..line_count..": Invalid expression \""..expr.."\"")
+            return
+        end
+        variables[varName] = result
     end
 
     if not variable_order[varName] then
@@ -57,7 +71,7 @@ function eval_var(tokens)
     end
 end
 
-function eval_display(tokens)
+function eval_display(tokens, local_vars)
     local rawValue = tokens[2]
     local please = tokens[3]
 
@@ -73,16 +87,25 @@ function eval_display(tokens)
 
     if rawValue:sub(1,1) == "\"" and rawValue:sub(-1) == "\"" then
         print(rawValue:sub(2,-2))
+        return
+    end
+
+    local val = nil
+
+    if local_vars and local_vars[rawValue] ~= nil then
+        val = local_vars[rawValue]
+    elseif variables[rawValue] ~= nil then
+        val = variables[rawValue]
+    end
+
+    if val ~= nil then
+        print(val)
     else
         local numValue = tonumber(rawValue)
         if numValue ~= nil then
             print(numValue)
         else
-            if variables[rawValue] == nil then
-                print(" === Variable '"..rawValue.."' does not exist!")
-            else
-                print(variables[rawValue])
-            end
+            print(" === Variable '"..rawValue.."' does not exist!")
         end
     end
 end
@@ -214,14 +237,12 @@ end
 
 function loopTokens(line)
     local tokens = {}
-    local pattern = '(%b".)|([^%s]+)'
-
     local pos = 1
     local len = #line
     while pos <= len do
         local quoted_start, quoted_end, quoted_content = string.find(line, '^"([^"]*)"', pos)
         if quoted_start == pos then
-            table.insert(tokens, quoted_content)
+            table.insert(tokens, '"' .. quoted_content .. '"')
             pos = quoted_end + 1
         else
             local word_start, word_end = string.find(line, '^[^%s"]+', pos)
@@ -250,13 +271,13 @@ local lineTypes = {
     ["call"] = eval_function_call,
 }
 
-function processLine(line)
+function processLine(line, local_vars)
     local tokens = loopTokens(line)
     local lineType = getLineType(tokens)
     if lineType then
-        local types = lineTypes[lineType]
-        if types then
-            types(tokens)
+        local fn = lineTypes[lineType]
+        if fn then
+            fn(tokens, local_vars)
         else
             print(" === Error: Unknown line type while parsing: "..lineType)
         end

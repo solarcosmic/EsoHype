@@ -2,7 +2,7 @@ can x be "sigma" pls
 display x pls
 
 funk announce name pls
-    can x be "the sigma" pls
+    can x be 5 + 5 pls
     display x pls
 endfunk pls
 
