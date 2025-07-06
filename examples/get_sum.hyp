@@ -1,0 +1,5 @@
+funk sum first second pls
+    can x be first + second pls
+    display x pls
+endfunk pls
+call sum 5 5 pls
