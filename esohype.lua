@@ -3,6 +3,7 @@ io.input(doc)
 
 local variables = {}
 local variable_order = {}
+local line_count = 1
 
 function eval_var(tokens)
     local varName = tokens[2]
@@ -10,11 +11,13 @@ function eval_var(tokens)
     local please = tokens[5]
     local value = nil
     if please ~= nil then
-        if please:lower() ~= "please" or please:lower() ~= "pls" then
-            --print("Mind your manners.")
+        if please:lower() ~= "please" and please:lower() ~= "pls" then
+            print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
+            return
         end
     else
-        --print("Mind your manners.")
+        print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
+        return
     end
 
     if rawValue:sub(1,1) == "\"" and rawValue:sub(-1) == "\"" then
@@ -38,13 +41,21 @@ function eval_var(tokens)
 end
 
 function eval_display(tokens)
-    local varName = tokens[2]
-    local value = variables[varName]
+    local rawValue = tokens[2]
 
-    if value == nil then
-        print(" === Variable '"..varName.."' does not exist!")
+    if rawValue:sub(1,1) == "\"" and rawValue:sub(-1) == "\"" then
+        print(rawValue:sub(2,-2))
     else
-        print(value)
+        local numValue = tonumber(rawValue)
+        if numValue ~= nil then
+            print(numValue)
+        else
+            if variables[rawValue] == nil then
+                print(" === Variable '"..varName.."' does not exist!")
+            else
+                print(variables[rawValue])
+            end
+        end
     end
 end
 
@@ -72,6 +83,7 @@ for line in io.lines() do
     elseif lineType == "display" then
         eval_display(tokens)
     end
+    line_count = line_count + 1
 end
 --for _, varName in ipairs(variable_order) do
 --    print(varName, variables[varName])
