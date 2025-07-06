@@ -1,0 +1,11 @@
+can n be 50 pls
+
+can a be 0 pls
+can b be 1 pls
+
+repeat n times pls
+    display a pls
+    can c be a pls
+    can a be b pls
+    can b be c + b pls
+endrepeat pls

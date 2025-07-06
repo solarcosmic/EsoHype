@@ -1,4 +1,10 @@
-local doc = io.open("example.hyp", "r")
+--[[
+ * Copyright (c) 2025 solarcosmic.
+ * This project is licensed under the MIT license.
+ * To view the license, see <https://opensource.org/licenses/MIT>.
+]]
+if arg[1] == null then print("Usage: lua esohype.lua <name>.hyp") return end
+local doc = io.open(arg[1], "r")
 io.input(doc)
 
 local variables = {}
@@ -176,12 +182,13 @@ function processLine(line)
 end
 
 function getLineType(tokens)
+    if tokens[1] == nil then return end -- new line
     if tokens[1]:lower() == "can" and tokens[3]:lower() == "be" then
         return "variable"
     elseif tokens[1]:lower() == "display" then
         return "display" -- equivalent of print
     elseif tokens[1]:lower() == "wait" and tokens[3]:lower() == "seconds" then
-        return "wait" -- equivalent of print
+        return "wait" -- wait seconds
     elseif tokens[1]:lower() == "repeat" then
         return "repeat"
     end

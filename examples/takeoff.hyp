@@ -1,0 +1,11 @@
+can n be 5 pls
+can m be n + 1 pls
+
+repeat n times pls
+    wait 1 seconds pls
+    can m be m - 1 pls
+    display m pls
+endrepeat pls
+
+wait 1 seconds pls
+display "Takeoff!" pls

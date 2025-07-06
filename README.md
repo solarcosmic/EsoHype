@@ -1,6 +1,12 @@
 # EsoHype
 An esoteric programming language written in Lua where you have to be nice.
 
+## How to Run
+1. Make sure you have Lua installed on your system (recommended 5.3+) and added to your PATH environment variables.
+2. Navigate to the folder where EsoHype is located (should be the same folder as your .hyp files) and run the command in a terminal:
+`lua esohype.lua <name>.hyp`
+3. Your program should now begin to execute!
+
 ## Manners
 It is required to have `please` or `pls` where it is required on the line, otherwise the interpreter will refuse to parse it. For example:
 ```py
