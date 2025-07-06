@@ -7,9 +7,9 @@ local line_count = 1
 
 function eval_var(tokens)
     local varName = tokens[2]
-    local rawValue = tokens[4]
-    local please = tokens[5]
-    local value = nil
+    local please = tokens[#tokens]
+    local expr_tokens = {}
+
     if please ~= nil then
         if please:lower() ~= "please" and please:lower() ~= "pls" then
             print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
@@ -19,21 +19,27 @@ function eval_var(tokens)
         print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
         return
     end
-
-    if rawValue:sub(1,1) == "\"" and rawValue:sub(-1) == "\"" then
-        value = rawValue:sub(2, -2)
-    else
-        local numValue = tonumber(rawValue)
-        if numValue ~= nil then value = numValue
+    
+    for i = 4, #tokens - 1 do
+        local token = tokens[i]
+        if variables[token] ~= nil then
+            table.insert(expr_tokens, tostring(variables[token]))
         else
-            if variables[rawValue] == nil then
-            else
-                value = variables[rawValue]
-            end
+            table.insert(expr_tokens, token)
         end
     end
 
-    variables[varName] = value
+    local expr = table.concat(expr_tokens, " ")
+    local chunk, err = load("return "..expr)
+    local suc, res = pcall(chunk)
+
+    if suc and res ~= nil then
+        variables[varName] = res
+    else
+        print(" === Error on line "..line_count..": Invalid expression \""..expr.."\"")
+        return
+    end
+
     if not variable_order[varName] then
         table.insert(variable_order, varName)
         variable_order[varName] = true
