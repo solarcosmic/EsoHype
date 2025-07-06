@@ -31,7 +31,12 @@ function eval_var(tokens)
         if variables[token] ~= nil then
             table.insert(expr_tokens, tostring(variables[token]))
         else
-            table.insert(expr_tokens, token)
+            local num = tonumber(token)
+            if num ~= nil then
+                table.insert(expr_tokens, token)
+            else
+                table.insert(expr_tokens, string.format("%q", token))
+            end
         end
     end
 
@@ -153,10 +158,85 @@ function eval_repeat(tokens)
     end
 end
 
+local functions = {}
+local function_block_lines = {}
+function eval_function(tokens)
+    local fn_name = tokens[2]
+    local fn_params = {}
+    for i = 4, #tokens do
+        table.insert(fn_params, tokens[i-1]) -- remove "pls" argument
+    end
+    function_block_lines = {}
+    for extra_line in io.lines() do
+        local extra_tokens = loopTokens(extra_line)
+        if extra_tokens[1]:lower() == "endfunk" then
+            break
+        else
+            table.insert(function_block_lines, extra_line)
+        end
+    end
+    functions[fn_name] = {
+        params = fn_params,
+        body = function_block_lines
+    }
+end
+
+function eval_function_call(tokens)
+    local fn_name = tokens[2]
+    local args = {}
+    for i = 3, #tokens do
+        table.insert(args, tokens[i-1]) -- remove "pls" argument
+    end
+    local local_vars = {}
+    for i, v in ipairs(functions[fn_name]["params"]) do
+        local argt = args[i+1]
+        if argt ~= nil then
+            if argt:sub(1,1) == "\"" and argt:sub(-1) == "\"" then
+                local_vars[v] = argt:sub(2,-2)
+            elseif variables[argt] ~= nil then
+                argt = variables[argt]
+            else
+                local numValue = tonumber(rawValue)
+                if numValue ~= nil then
+                    argt = numValue
+                end
+            end
+            variables[v] = argt
+        end
+    end
+    for w, x in ipairs(functions[fn_name]["body"]) do
+        processLine(x, local_vars)
+    end
+    --for _, item in pairs(function_block_lines) do
+    --    processLine(item)
+    --end
+end
+
 function loopTokens(line)
     local tokens = {}
-    for token in string.gmatch(line, "[^%s]+") do
-        table.insert(tokens, token)
+    local pattern = '(%b".)|([^%s]+)'
+
+    local pos = 1
+    local len = #line
+    while pos <= len do
+        local quoted_start, quoted_end, quoted_content = string.find(line, '^"([^"]*)"', pos)
+        if quoted_start == pos then
+            table.insert(tokens, quoted_content)
+            pos = quoted_end + 1
+        else
+            local word_start, word_end = string.find(line, '^[^%s"]+', pos)
+            if word_start == pos then
+                table.insert(tokens, string.sub(line, word_start, word_end))
+                pos = word_end + 1
+            else
+                local ws_start, ws_end = string.find(line, '^%s+', pos)
+                if ws_start == pos then
+                    pos = ws_end + 1
+                else
+                    pos = pos + 1
+                end
+            end
+        end
     end
     return tokens
 end
@@ -165,7 +245,9 @@ local lineTypes = {
     ["variable"] = eval_var,
     ["display"] = eval_display,
     ["wait"] = eval_wait,
-    ["repeat"] = eval_repeat
+    ["repeat"] = eval_repeat,
+    ["function"] = eval_function,
+    ["call"] = eval_function_call,
 }
 
 function processLine(line)
@@ -191,6 +273,10 @@ function getLineType(tokens)
         return "wait" -- wait seconds
     elseif tokens[1]:lower() == "repeat" then
         return "repeat"
+    elseif tokens[1]:lower() == "funk" then
+        return "function"
+    elseif tokens[1]:lower() == "call" then
+        return "call"
     end
 end
 

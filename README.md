@@ -1,5 +1,5 @@
 # EsoHype
-An esoteric programming language written in Lua where you have to be nice.
+An esoteric programming language written in Lua where you have to have manners.
 
 ## How to Run
 1. Make sure you have Lua installed on your system (recommended 5.3+) and added to your PATH environment variables.
@@ -107,3 +107,6 @@ However, instead of running indefinitely until stopped, EsoHype will only grab t
 10
 ```
 Indents are not needed inside a repeat block as they will be ignored by the interpreter, but they make the code easier to read.
+
+## Examples
+[fibonacci.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/fibonacci.hyp) - Fibonacci Sequence
