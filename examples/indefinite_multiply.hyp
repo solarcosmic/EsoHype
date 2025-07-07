@@ -1,0 +1,6 @@
+can x be 1 pls
+repeat
+    wait 1 seconds pls
+    can x be x * 2 pls
+    display x pls
+endrepeat

@@ -193,7 +193,7 @@ function eval_function(tokens)
     function_block_lines = {}
     for extra_line in io.lines() do
         local extra_tokens = loopTokens(extra_line)
-        if extra_tokens[1]:lower() == "endfunk" then
+        if extra_tokens[1] and extra_tokens[1]:lower() == "endfunk" then
             break
         else
             table.insert(function_block_lines, extra_line)
@@ -236,8 +236,86 @@ function eval_function_call(tokens)
     --end
 end
 
+function eval_repeat_indefinitely(tokens)
+    local block_lines = {}
+    for extra_line in io.lines() do
+        local extra_tokens = loopTokens(extra_line)
+        if extra_tokens[1]:lower() == "endrepeat" then
+            break
+        else
+            table.insert(block_lines, extra_line)
+        end
+    end
+
+    while true do
+        for _, block_line in ipairs(block_lines) do
+            processLine(block_line)
+        end
+    end
+end
+
+function eval_if(tokens, local_vars)
+    local please = tokens[#tokens]
+    if please == nil then
+        print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
+        return
+    end
+    if please:lower() ~= "pls" and please:lower() ~= "please" then
+        print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
+        return
+    end
+
+    local condition_tokens = {}
+    for i = 2, #tokens-1 do
+        local t = tokens[i]
+        if local_vars and local_vars[t] ~= nil then
+            table.insert(condition_tokens, tostring(local_vars[t]))
+        elseif variables[t] ~= nil then
+            table.insert(condition_tokens, tostring(variables[t]))
+        else
+            table.insert(condition_tokens, t)
+        end
+    end
+
+    local condexpr = table.concat(condition_tokens, " ")
+    local chunk, err = load("return " .. condexpr)
+    if not chunk then
+        print(" === Error on line "..line_count..": Invalid condition expression \""..condexpr.."\"")
+        return
+    end
+
+    local success, result = pcall(chunk)
+    if not success then
+        print(" === Error on line "..line_count..": Failed to evaluate condition \""..condexpr.."\"")
+        return
+    end
+
+    local condition_true = result and true or false
+
+    local block_lines = {}
+    for extra_line in io.lines() do
+        local extra_tokens = loopTokens(extra_line)
+        if extra_tokens[1] and extra_tokens[1]:lower() == "endif" then
+            break
+        else
+            table.insert(block_lines, extra_line)
+        end
+    end
+
+    if condition_true then
+        for _, block_line in ipairs(block_lines) do
+            local clone_if = loopTokens(block_line)[1]
+            if clone_if and clone_if:lower() == "if" then
+                print(" =!= Warn: If statement detected in another if statement. Nested if statement blocks will be ignored, but their contents may still run.")
+            end
+            processLine(block_line, local_vars)
+        end
+    end
+end
+
 function loopTokens(line)
     local tokens = {}
+    if line == nil then return tokens end
     local pos = 1
     local len = #line
     while pos <= len do
@@ -270,6 +348,8 @@ local lineTypes = {
     ["repeat"] = eval_repeat,
     ["function"] = eval_function,
     ["call"] = eval_function_call,
+    ["repeat_indefinitely"] = eval_repeat_indefinitely,
+    ["if"] = eval_if
 }
 
 function processLine(line, local_vars)
@@ -293,12 +373,16 @@ function getLineType(tokens)
         return "display" -- equivalent of print
     elseif tokens[1]:lower() == "wait" and tokens[3]:lower() == "seconds" then
         return "wait" -- wait seconds
-    elseif tokens[1]:lower() == "repeat" then
+    elseif tokens[3] ~= nil and tokens[1]:lower() == "repeat" and tokens[3]:lower() == "times" then
         return "repeat"
+    elseif tokens[1]:lower() == "repeat" then
+        return "repeat_indefinitely"
     elseif tokens[1]:lower() == "funk" then
         return "function"
     elseif tokens[1]:lower() == "call" then
         return "call"
+    elseif tokens[1]:lower() == "if" then
+        return "if"
     end
 end
 

@@ -75,7 +75,7 @@ repeat x times (pls)
     display "This will happen 25 times!" pls
 endrepeat (pls)
 ```
-Repeat loops are blocks of code that repeat a certain amount. They start with `repeat x times` where `x` is the number or variable, and end with `endrepeat`.
+Repeat loops are blocks of code that repeat a certain amount. They start with `repeat x times` where `x` is the number or variable, and end with `endrepeat`. ***Repeat loops cannot be nested.***
 
 You may set the repeat count to a number:
 ```py
@@ -108,5 +108,97 @@ However, instead of running indefinitely until stopped, EsoHype will only grab t
 ```
 Indents are not needed inside a repeat block as they will be ignored by the interpreter, but they make the code easier to read.
 
+### Repeating Indefinitely
+Repeating indefinitely is also possible, for example:
+
+```py
+can x be 1 pls
+repeat
+    wait 1 seconds pls
+    can x be x * 2 pls
+    display x pls
+endrepeat
+```
+[indefinite_multiply.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/indefinite_multiply.hyp) - Using indefinite repeat blocks to multiply a number
+
+The above code will keep multiplying `x` by 2 until stopped (Ctrl+C).
+
+*NOTE: **Do not** have a indefinite repeat block without something yielding it! This means, for example, `wait`. Otherwise, this may crash your device.*
+
+## Functions
+Functions are blocks of code that can be repeated as many times as you wish. ***Functions cannot be nested.***
+
+To define a function, use the keyword `funk`, then the name of the function (e.g. `sum`) followed by the arguments you wish to provide (don't forget `pls` or `please` at the end). For example:
+```py
+funk sum first second pls
+
+endfunk
+```
+Note that all functions must end with `endfunk`, otherwise the rest of the script may fail to execute correctly.
+
+In this example, `first` is our first argument (the first number) and `second` is our second argument (the second number) that will be used when we add them both together.
+
+Since arithmetic can only be handled in variables, let's create a variable, in this case `x`, as a temporary variable to do the addition.
+```py
+funk sum first second pls
+    can x be first + second pls
+endfunk
+```
+We're adding together both first and second as numbers.
+
+Finally, let's print the result to the user and call the function:
+```py
+funk sum first second pls
+    can x be first + second pls
+    display x pls
+endfunk pls
+call sum 5 5 pls
+```
+Note the last line - `call sum`. The two numbers there are the arguments that we provided (first and second), and `call sum` executes the function named sum.
+
+Running this inside the console, we get this as output:
+```
+10
+```
+Check out the example here:
+[get_sum.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/get_sum.hyp) - Sum of two numbers using a function
+
+## If Statements
+An `if` statement compares one value to another, and if it is true, executes code inside the block. ***If statements cannot be nested.***
+For example:
+```py
+can x be 10 pls
+if x > 5 pls
+    display "x is greater than 5!" pls
+endif
+```
+Note that all `if` blocks must end with `endif` otherwise the script may not run correctly.
+
+It does not necessarily have to be a variable that you're comparing, for example:
+```py
+if 10 > 5 pls
+    display "10 is still greater than 5!"
+endif
+```
+[if_block.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/if_block.hyp) - Basic example of comparing two values
+
+You can also compare strings as well.
+
+### Operator Signs
+You may use these operator signs in `if` blocks.
+
+`<` less than
+`>` greater than
+`<=` less than or equal to
+`=>` greater than or equal to
+`~=` not equal to
+`==` equals
+
 ## Examples
-[fibonacci.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/fibonacci.hyp) - Fibonacci Sequence
+[fibonacci.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/fibonacci.hyp) - Fibonacci sequence
+[takeoff.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/takeoff.hyp) - Count down from 5 to 0 (takeoff) using a repeat block
+[get_sum.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/get_sum.hyp) - Sum of two numbers using a function
+[if_block.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/if_block.hyp) - Basic example of comparing two values
+[indefinite_multiply.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/indefinite_multiply.hyp) - Using indefinite repeat blocks to multiply a number
+
+To execute any of these examples in your terminal, simply type `lua esohype.lua examples/<name>.hyp`, for example `lua esohype.lua examples/takeoff.hyp`. This assumes `esohype.lua` is in the same folder as `examples`.
