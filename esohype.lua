@@ -28,11 +28,6 @@ function eval_var(tokens)
     local varName = tokens[2]
     local expr_tokens = {}
 
-    if not polite_check(tokens, #tokens) then
-        print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
-        return
-    end
-
     local is_single_token = (#tokens - 4 + 1) == 1 -- i don't know how but this works
     local token = tokens[4]
 
@@ -83,11 +78,6 @@ function eval_display(tokens, local_vars)
     local rawValue = tokens[2]
     local please = tokens[3]
 
-    if not polite_check(tokens, #tokens) then
-        print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
-        return
-    end
-
     if rawValue:sub(1,1) == "\"" and rawValue:sub(-1) == "\"" then
         print(rawValue:sub(2,-2))
         return
@@ -128,10 +118,6 @@ function eval_wait(tokens)
     local seconds = tokens[3]
 
     if wait ~= nil and wait:lower() == "wait" and seconds:lower() == "seconds" then
-        if not polite_check(tokens, #tokens) then
-            print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
-            return
-        end
         if tonumber(tokens[2]) then
             sleep(tonumber(tokens[2]))
         else
@@ -260,10 +246,6 @@ end
 
 function eval_if(tokens, local_vars)
     local please = tokens[#tokens]
-    if not polite_check(tokens, #tokens) then
-        print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
-        return
-    end
 
     local condition_tokens = {}
     for i = 2, #tokens-1 do
@@ -354,6 +336,10 @@ local lineTypes = {
 
 function processLine(line, local_vars)
     local tokens = loopTokens(line)
+    if not polite_check(tokens, #tokens) then
+        print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
+        return
+    end
     local lineType = getLineType(tokens)
     if lineType then
         local fn = lineTypes[lineType]
