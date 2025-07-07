@@ -121,7 +121,7 @@ endrepeat
 ```
 [indefinite_multiply.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/indefinite_multiply.hyp) - Using indefinite repeat blocks to multiply a number
 
-The above code will keep multiplying `x` by 2 until stopped (Ctrl+C).
+The above code will keep multiplying `x` by 2 until stopped (Ctrl+C). After a while, you may see the integers going into the negatives, [this is a limitation of integers and how Lua handles it](http://lua-users.org/wiki/IntegerDomain).
 
 *NOTE: **Do not** have a indefinite repeat block without something yielding it! This means, for example, `wait`. Otherwise, this may crash your device.*
 
@@ -202,3 +202,7 @@ You may use these operator signs in `if` blocks.
 [indefinite_multiply.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/indefinite_multiply.hyp) - Using indefinite repeat blocks to multiply a number
 
 To execute any of these examples in your terminal, simply type `lua esohype.lua examples/<name>.hyp`, for example `lua esohype.lua examples/takeoff.hyp`. This assumes `esohype.lua` is in the same folder as `examples`.
+
+## FAQ
+#### What is nesting and why can't it be done?
+Nesting means to run, for example, functions inside functions. This capability hasn't been created (as of yet), but if anybody would like to contribute (e.g. make a pull request) feel free to do so.

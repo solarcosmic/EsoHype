@@ -12,22 +12,28 @@ local variables = {}
 local variable_order = {}
 local line_count = 1
 
-function eval_var(tokens)
-    local varName = tokens[2]
-    local please = tokens[#tokens]
-    local expr_tokens = {}
-
-    if please ~= nil then
-        if please:lower() ~= "please" and please:lower() ~= "pls" then
-            print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
-            return
+function polite_check(tokens, expect_index)
+    local word = tokens[expect_index]
+    if word then
+        if word:lower() == "please" or word:lower() == "pls" then
+            return true
         end
     else
+        return false
+    end
+    return false
+end
+
+function eval_var(tokens)
+    local varName = tokens[2]
+    local expr_tokens = {}
+
+    if not polite_check(tokens, #tokens) then
         print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
         return
     end
 
-    local is_single_token = (#tokens - 4 + 1) == 1
+    local is_single_token = (#tokens - 4 + 1) == 1 -- i don't know how but this works
     local token = tokens[4]
 
     if is_single_token then
@@ -38,7 +44,6 @@ function eval_var(tokens)
             if num ~= nil then
                 variables[varName] = num
             else
-                -- It's a literal string
                 variables[varName] = token
             end
         end
@@ -53,7 +58,7 @@ function eval_var(tokens)
         end
 
         local expr = table.concat(expr_tokens, " ")
-        local chunk, err = load("return " .. expr)
+        local chunk, err = load("return "..expr, "expr", "t", {math=math})
         if not chunk then
             print(" === Error on line "..line_count..": Invalid expression \""..expr.."\"")
             return
@@ -64,24 +69,21 @@ function eval_var(tokens)
             return
         end
         variables[varName] = result
+        return true
     end
 
     if not variable_order[varName] then
         table.insert(variable_order, varName)
         variable_order[varName] = true
     end
+    return false
 end
 
 function eval_display(tokens, local_vars)
     local rawValue = tokens[2]
     local please = tokens[3]
 
-    if please ~= nil then
-        if please:lower() ~= "please" and please:lower() ~= "pls" then
-            print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
-            return
-        end
-    else
+    if not polite_check(tokens, #tokens) then
         print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
         return
     end
@@ -101,14 +103,18 @@ function eval_display(tokens, local_vars)
 
     if val ~= nil then
         print(val)
+        return true
     else
         local numValue = tonumber(rawValue)
         if numValue ~= nil then
             print(numValue)
+            return true
         else
             print(" === Variable '"..rawValue.."' does not exist!")
+            return false
         end
     end
+    return false
 end
 
 -- https://stackoverflow.com/questions/17987618/how-to-add-a-sleep-or-wait-to-my-lua-script
@@ -122,11 +128,7 @@ function eval_wait(tokens)
     local seconds = tokens[3]
 
     if wait ~= nil and wait:lower() == "wait" and seconds:lower() == "seconds" then
-        if tokens[4] == nil then
-            print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
-            return
-        end
-        if tokens[4]:lower() ~= "pls" and tokens[4]:lower() ~= "please" then
+        if not polite_check(tokens, #tokens) then
             print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
             return
         end
@@ -142,11 +144,13 @@ function eval_wait(tokens)
             local numValue = tonumber(varValue)
             if numValue then
                 sleep(numValue)
+                return true
             else
                 print(" === Variable '"..varName.."' is not a qualified number!")
             end
         end
     end
+    return false
 end
 
 function eval_repeat(tokens)
@@ -256,11 +260,7 @@ end
 
 function eval_if(tokens, local_vars)
     local please = tokens[#tokens]
-    if please == nil then
-        print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
-        return
-    end
-    if please:lower() ~= "pls" and please:lower() ~= "please" then
+    if not polite_check(tokens, #tokens) then
         print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
         return
     end
@@ -278,7 +278,7 @@ function eval_if(tokens, local_vars)
     end
 
     local condexpr = table.concat(condition_tokens, " ")
-    local chunk, err = load("return " .. condexpr)
+    local chunk, err = load("return "..condexpr, "expr", "t", {math=math})
     if not chunk then
         print(" === Error on line "..line_count..": Invalid condition expression \""..condexpr.."\"")
         return
@@ -313,7 +313,7 @@ function eval_if(tokens, local_vars)
     end
 end
 
-function loopTokens(line)
+function loopTokens(line) -- i don't know what i'm reading anymore
     local tokens = {}
     if line == nil then return tokens end
     local pos = 1
