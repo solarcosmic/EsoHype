@@ -3,8 +3,9 @@
  * This project is licensed under the MIT license.
  * To view the license, see <https://opensource.org/licenses/MIT>.
 ]]
-if arg[1] == null then print("Usage: lua esohype.lua <name>.hyp") return end
+if arg[1] == nil then print("Usage: lua esohype.lua <name>.hyp") return end
 local doc = io.open(arg[1], "r")
+if doc == nil then print(" === Error: Invalid file. Please check to make sure the file is correct. Usage: lua esohype.lua <name>.hyp") return end
 io.input(doc)
 
 local variables = {}
