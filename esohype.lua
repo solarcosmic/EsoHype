@@ -339,8 +339,6 @@ function eval_if(tokens, local_vars)
             table.insert(block_lines, extra_line)
         end
     end
-
-    print("DEBUG: condition", condexpr, "→", tostring(result))
     if condition_true then
         for _, block_line in ipairs(block_lines) do
             local clone_if = loopTokens(block_line)[1]
