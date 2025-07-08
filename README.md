@@ -203,6 +203,12 @@ You may use these operator signs in `if` blocks.
 
 To execute any of these examples in your terminal, simply type `lua esohype.lua examples/<name>.hyp`, for example `lua esohype.lua examples/takeoff.hyp`. This assumes `esohype.lua` is in the same folder as `examples`.
 
+## Limitations & Constraints
+- Lines must end with `please` or `pls`
+- You cannot nest `if`, `funk`, or `repeat` blocks
+- Converting strings to numbers and vice versa is not directly possible
+- Arithmetic can only be done in variables
+
 ## FAQ
 #### What is nesting and why can't it be done?
 Nesting means to run, for example, functions inside functions. This capability hasn't been created (as of yet), but if anybody would like to contribute (e.g. make a pull request) feel free to do so.

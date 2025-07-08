@@ -6,7 +6,7 @@
 if arg[1] == nil then print("Usage: lua esohype.lua <name>.hyp") return end
 local doc = io.open(arg[1], "r")
 if doc == nil then print(" === Error: Invalid file. Please check to make sure the file is correct. Usage: lua esohype.lua <name>.hyp") return end
-io.input(doc)
+--io.input(doc)
 
 local variables = {}
 local variable_order = {}
@@ -27,51 +27,107 @@ end
 function eval_var(tokens)
     local varName = tokens[2]
     local expr_tokens = {}
-
-    local is_single_token = (#tokens - 4 + 1) == 1 -- i don't know how but this works
-    local token = tokens[4]
-
-    if is_single_token then
-        if variables[token] ~= nil then
-            variables[varName] = variables[token]
-        else
-            local num = tonumber(token)
-            if num ~= nil then
-                variables[varName] = num
-            else
-                variables[varName] = token
+    local as_index = nil
+    local input_index = nil
+    local input_result = nil
+    for i = 4, #tokens do
+        if tokens[i] and tokens[i]:lower() == "as" then
+            as_index = i
+            break
+        end
+    end
+    if tokens[4] and tokens[4]:lower() == "input" then
+        input_result = io.read()
+        if as_index then
+            local to_convert = tokens[as_index + 1]
+            if to_convert then
+                if to_convert:lower() == "number" then
+                    input_result = tonumber(input_result)
+                    if not input_result then
+                        print(" -!- Warn: Could not convert '"..varName.."' to a number, the result will be null.")
+                    end
+                elseif to_convert:lower() == "string" then
+                    input_result = tostring(input_result)
+                    if not input_result then
+                        print(" -!- Warn: Could not convert '"..varName.."' to a string, the result will be null.")
+                    end
+                end
             end
         end
-    else
-        for i = 4, #tokens - 1 do
-            local t = tokens[i]
-            if variables[t] ~= nil then
-                table.insert(expr_tokens, tostring(variables[t]))
-            else
-                table.insert(expr_tokens, t)
-            end
+        variables[varName] = input_result
+        return
+    end
+    if as_index then
+        if input_result then return end
+        local conversion_type = tokens[as_index+1] and tokens[as_index+1]:lower()
+        local expr_tokens_raw = {}
+        for i = 4, as_index-1 do
+            table.insert(expr_tokens_raw, tokens[i])
         end
-
-        local expr = table.concat(expr_tokens, " ")
-        local chunk, err = load("return "..expr, "expr", "t", {math=math})
+        local expr_str = table.concat(expr_tokens_raw, " ")
+        local chunk, err = load("return "..expr_str, "expr", "t", {math=math})
         if not chunk then
-            print(" === Error on line "..line_count..": Invalid expression \""..expr.."\"")
+            print(" === Error on line "..line_count..": Invalid expression \""..expr_str.."\"")
             return
         end
         local ok, result = pcall(chunk)
         if not ok or result == nil then
-            print(" === Error on line "..line_count..": Invalid expression \""..expr.."\"")
+            print(" === Error on line "..line_count..": Invalid expression \""..expr_str.."\"")
             return
         end
+        if conversion_type == "string" then
+            result = tostring(result)
+        elseif conversion_type == "number" then
+            result = tonumber(result)
+            if not result then
+                print(" === Error on line "..line_count..": Cannot convert to number.")
+                return
+            end
+        end
         variables[varName] = result
-        return true
+    else
+        if input_result then return end
+        local is_single_token = (#tokens - 4 + 1) == 1
+        local token = tokens[4]
+        if is_single_token then
+            if variables[token] ~= nil then
+                variables[varName] = variables[token]
+            else
+                local num = tonumber(token)
+                if num ~= nil then
+                    variables[varName] = num
+                else
+                    variables[varName] = token
+                end
+            end
+        else
+            for i = 4, #tokens - 1 do
+                local t = tokens[i]
+                if variables[t] ~= nil then
+                    table.insert(expr_tokens, tostring(variables[t]))
+                else
+                    table.insert(expr_tokens, t)
+                end
+            end
+            local expr = table.concat(expr_tokens, " ")
+            local chunk, err = load("return "..expr, "expr", "t", {math=math})
+            if not chunk then
+                print(" === Error on line "..line_count..": Invalid expression \""..expr.."\"")
+                return
+            end
+            local ok, result = pcall(chunk)
+            if not ok or result == nil then
+                print(" === Error on line "..line_count..": Invalid expression \""..expr.."\"")
+                return
+            end
+            variables[varName] = result
+        end
     end
 
     if not variable_order[varName] then
         table.insert(variable_order, varName)
         variable_order[varName] = true
     end
-    return false
 end
 
 function eval_display(tokens, local_vars)
@@ -100,7 +156,7 @@ function eval_display(tokens, local_vars)
             print(numValue)
             return true
         else
-            print(" === Variable '"..rawValue.."' does not exist!")
+            print(" === Error: Variable '"..rawValue.."' does not exist!")
             return false
         end
     end
@@ -156,7 +212,7 @@ function eval_repeat(tokens)
     end
     
     local block_lines = {}
-    for extra_line in io.lines() do
+    for extra_line in doc:lines() do
         local extra_tokens = loopTokens(extra_line)
         if extra_tokens[1]:lower() == "endrepeat" then
             break
@@ -181,7 +237,7 @@ function eval_function(tokens)
         table.insert(fn_params, tokens[i-1]) -- remove "pls" argument
     end
     function_block_lines = {}
-    for extra_line in io.lines() do
+    for extra_line in doc:lines() do
         local extra_tokens = loopTokens(extra_line)
         if extra_tokens[1] and extra_tokens[1]:lower() == "endfunk" then
             break
@@ -228,7 +284,7 @@ end
 
 function eval_repeat_indefinitely(tokens)
     local block_lines = {}
-    for extra_line in io.lines() do
+    for extra_line in doc:lines() do
         local extra_tokens = loopTokens(extra_line)
         if extra_tokens[1]:lower() == "endrepeat" then
             break
@@ -275,7 +331,7 @@ function eval_if(tokens, local_vars)
     local condition_true = result and true or false
 
     local block_lines = {}
-    for extra_line in io.lines() do
+    for extra_line in doc:lines() do
         local extra_tokens = loopTokens(extra_line)
         if extra_tokens[1] and extra_tokens[1]:lower() == "endif" then
             break
@@ -284,6 +340,7 @@ function eval_if(tokens, local_vars)
         end
     end
 
+    print("DEBUG: condition", condexpr, "→", tostring(result))
     if condition_true then
         for _, block_line in ipairs(block_lines) do
             local clone_if = loopTokens(block_line)[1]
@@ -372,7 +429,7 @@ function getLineType(tokens)
     end
 end
 
-for line in io.lines() do
+for line in doc:lines() do
     processLine(line)
     line_count = line_count + 1
 end

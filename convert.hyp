@@ -1,0 +1,10 @@
+display "Try guess the number!" pls
+repeat pls
+    can x be input as number pls
+    if x == 5 pls
+        display "You guessed correctly!" pls
+    endif pls
+    if x ~= 5 pls
+        display "Sorry! The answer was 5." pls
+    endif pls
+endrepeat pls
