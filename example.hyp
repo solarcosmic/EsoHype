@@ -1,10 +1,8 @@
 can x be "sigma" pls
 display x pls
-
 funk announce name pls
     can x be 5 + 5 pls
     display x pls
     display name pls
 endfunk pls
-
 call announce "Dr. Sigma" pls

@@ -1,6 +1,15 @@
 # EsoHype
 An esoteric programming language written in Lua where you have to have manners.
 
+## Limitations & Constraints
+- Lines must end with `please` or `pls`
+- You cannot nest `if`, `funk`, or `repeat` blocks
+- Converting strings to numbers and vice versa is not directly possible
+- Arithmetic can only be done in variables
+- New lines and comments don't exist for readability purposes, although shown in the docs
+
+Some of these functions are by design and intended to make experimenting with this programming language more difficult.
+
 ## How to Run
 1. Make sure you have Lua installed on your system (recommended 5.3+) and added to your PATH environment variables.
 2. Navigate to the folder where EsoHype is located (should be the same folder as your .hyp files) and run the command in a terminal:
@@ -202,12 +211,6 @@ You may use these operator signs in `if` blocks.
 [indefinite_multiply.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/indefinite_multiply.hyp) - Using indefinite repeat blocks to multiply a number
 
 To execute any of these examples in your terminal, simply type `lua esohype.lua examples/<name>.hyp`, for example `lua esohype.lua examples/takeoff.hyp`. This assumes `esohype.lua` is in the same folder as `examples`.
-
-## Limitations & Constraints
-- Lines must end with `please` or `pls`
-- You cannot nest `if`, `funk`, or `repeat` blocks
-- Converting strings to numbers and vice versa is not directly possible
-- Arithmetic can only be done in variables
 
 ## FAQ
 #### What is nesting and why can't it be done?
