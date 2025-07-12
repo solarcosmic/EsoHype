@@ -247,3 +247,6 @@ To execute any of these examples in your terminal, simply type `lua esohype.lua 
 ## FAQ
 #### What is nesting and why can't it be done?
 Nesting means to run, for example, functions inside functions. This capability hasn't been created (as of yet), but if anybody would like to contribute (e.g. make a pull request) feel free to do so.
+
+## AI Disclosure
+AI was used to make *some* of the logic, particularly complicated ones like if statements and functions. However, the main base of the programming language was made by me with AI sprinkles on top (basically).
