@@ -13,7 +13,7 @@ Some of these functions are by design and intended to make experimenting with th
 ## How to Run
 1. Make sure you have Lua installed on your system (recommended 5.3+) and added to your PATH environment variables.
 2. Navigate to the folder where EsoHype is located (should be the same folder as your .hyp files) and run the command in a terminal:
-`lua esohype.lua <name>.hyp`
+`lua esohype.lua <name>.hyp` (Linux/Windows) or `lua54 esohype.lua <name>.hyp` (Windows)
 3. Your program should now begin to execute!
 
 ## Manners
