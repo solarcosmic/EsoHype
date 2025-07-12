@@ -1,3 +1,5 @@
+<img width="1920" height="534" alt="esohype_banner_2" src="https://github.com/user-attachments/assets/39e43253-e0cf-4a86-91e1-6ffc83d26998" />
+
 # EsoHype
 An esoteric programming language written in Lua where you have to have manners.
 
@@ -197,17 +199,26 @@ You can also compare strings as well.
 You may use these operator signs in `if` blocks.
 
 `<` less than
+
 `>` greater than
+
 `<=` less than or equal to
+
 `=>` greater than or equal to
+
 `~=` not equal to
+
 `==` equals
 
 ## Examples
 [fibonacci.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/fibonacci.hyp) - Fibonacci sequence
+
 [takeoff.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/takeoff.hyp) - Count down from 5 to 0 (takeoff) using a repeat block
+
 [get_sum.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/get_sum.hyp) - Sum of two numbers using a function
+
 [if_block.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/if_block.hyp) - Basic example of comparing two values
+
 [indefinite_multiply.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/indefinite_multiply.hyp) - Using indefinite repeat blocks to multiply a number
 
 To execute any of these examples in your terminal, simply type `lua esohype.lua examples/<name>.hyp`, for example `lua esohype.lua examples/takeoff.hyp`. This assumes `esohype.lua` is in the same folder as `examples`.
