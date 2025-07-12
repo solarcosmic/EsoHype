@@ -222,17 +222,12 @@ It must be stored into a variable.
 For example:
 ```py
 can x be input as number pls
-if x is 5 pls
+if x == 5 pls
     display "x is 5!" pls
-endif
+endif pls
 ```
-Notice the keywords `as number` - this can also be `as string`, but then it would look like this:
-```py
-can x be input as string pls
-if x is "5" pls
-    display "x is 5!" pls
-endif
-```
+Notice the keywords `as number` - the same can be applied for `as string`.
+
 However, if you want to display what `x` (the input variable) is, converting it to a number or a string is generally not needed as `display` prints either.
 
 
