@@ -6,7 +6,6 @@ An esoteric programming language written in Lua where you have to have manners.
 ## Limitations & Constraints
 - Lines must end with `please` or `pls`
 - You cannot nest `if`, `funk`, or `repeat` blocks
-- Converting strings to numbers and vice versa is not directly possible
 - Arithmetic can only be done in variables
 - New lines and comments don't exist for readability purposes, although shown in the docs
 
@@ -209,6 +208,33 @@ You may use these operator signs in `if` blocks.
 `~=` not equal to
 
 `==` equals
+
+## Input
+`input` lets you read user input and stream it to a variable. For example:
+```py
+can x be input pls
+display x pls
+```
+`input` yields the script until the user has submitted entry.
+It must be stored into a variable.
+
+## Number/String Conversion
+For example:
+```py
+can x be input as number pls
+if x is 5 pls
+    display "x is 5!" pls
+endif
+```
+Notice the keywords `as number` - this can also be `as string`, but then it would look like this:
+```py
+can x be input as string pls
+if x is "5" pls
+    display "x is 5!" pls
+endif
+```
+However, if you want to display what `x` (the input variable) is, converting it to a number or a string is generally not needed as `display` prints either.
+
 
 ## Examples
 [fibonacci.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/fibonacci.hyp) - Fibonacci sequence
