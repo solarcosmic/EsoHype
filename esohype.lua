@@ -3,8 +3,32 @@
  * This project is licensed under the MIT license.
  * To view the license, see <https://opensource.org/licenses/MIT>.
 ]]
-if arg[1] == nil then print("Usage: lua esohype.lua <name>.hyp") return end
-local doc = io.open(arg[1], "r")
+local doc
+local isExec = false
+if arg[1] == nil then
+    print("Lua binary usage: lua esohype.lua <name>.hyp | Executable usage: esohype <name>.hyp")
+    print("")
+    print("Welcome to EsoHype!")
+    print("Please enter the name of the script you would like to use.")
+    print("Please make sure that your script is in the **same** directory as EsoHype, or make sure EsoHype is in the top directory.")
+    print("To access files in folders, you can do example/script_name.hyp, otherwise do script_name.hyp.");
+    print("Enter script name:")
+    while true do
+        input_result = io.read()
+        if input_result then
+            doc = io.open(input_result, "r")
+            if doc == nil then
+                print(" === Error: Invalid file. Please check to make sure the file is correct.")
+            else
+                isExec = true
+                print("=== EXECUTING SCRIPT ===")
+                break
+            end
+        end
+    end
+else
+    doc = io.open(arg[1], "r")
+end
 if doc == nil then print(" === Error: Invalid file. Please check to make sure the file is correct. Usage: lua esohype.lua <name>.hyp") return end
 --io.input(doc)
 
@@ -435,3 +459,7 @@ end
 --    print(varName, variables[varName])
 --end
 doc:close()
+if isExec == true then
+    print("=== SCRIPT END, PRESS ENTER/RETURN TO EXIT ===")
+    io.read()
+end
