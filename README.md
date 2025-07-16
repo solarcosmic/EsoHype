@@ -12,10 +12,7 @@ An esoteric programming language written in Lua where you have to have manners.
 Some of these functions are by design and intended to make experimenting with this programming language more difficult.
 
 ## How to Run
-1. Make sure you have Lua installed on your system (recommended 5.3+) and added to your PATH environment variables.
-2. Navigate to the folder where EsoHype is located (should be the same folder as your .hyp files) and run the command in a terminal:
-`lua esohype.lua <name>.hyp` (Linux/Windows) or `lua54 esohype.lua <name>.hyp` (Windows)
-3. Your program should now begin to execute!
+See [How to Run EsoHype - how_to_run.md](https://github.com/solarcosmic/EsoHype/blob/main/how_to_run.md) or the [official Wiki page](https://github.com/solarcosmic/EsoHype/wiki/How-to-Run-or-Install-EsoHype).
 
 ## Manners
 It is required to have `please` or `pls` where it is required on the line, otherwise the interpreter will refuse to parse it. For example:
