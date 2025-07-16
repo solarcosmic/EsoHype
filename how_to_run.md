@@ -10,13 +10,13 @@ Want to run EsoHype? Intrigued by the language itself? Feel free to read this gu
 ### Windows
 If you're on Windows, you can open `esohype.exe`.
 
-[powershell_image]
+<img width="1076" height="615" alt="Screenshot 2025-07-17 103001" src="https://github.com/user-attachments/assets/4b4dbcfb-9b6a-4785-b0de-418a8f8d8e8d" />
 
 > If you ever get this popup, just click "Run Anyway". This is Windows complaining because the executable doesn't have a signed certificate.
 
 EsoHype will then ask for a script path. This is where your script is located. It must be located in the same folder or in a descendant folder for EsoHype to find it.
 
-[example_hyp]
+<img width="1417" height="330" alt="Screenshot 2025-07-17 104934" src="https://github.com/user-attachments/assets/0a1e93e8-caea-4435-a56b-99be0f317882" />
 
 > Note: If your .hyp file is in a descendant folder (a descendant folder where `esohype.exe` is located), for example, the folder `/examples`, then for the script path you would just type `examples/<name>.hyp`, for example: `examples/fibonacci.hyp`.
 
@@ -40,7 +40,7 @@ Unfortunately, EsoHype installation on macOS/Linux is not that straight forward.
 
 3. EsoHype will then ask for a script path. This is where your script is located. It must be located in the same folder or in a descendant folder for EsoHype to find it. Here's an image from Windows that should apply to macOS/Linux:
 
-[example_hyp]
+<img width="1417" height="330" alt="Screenshot 2025-07-17 104934" src="https://github.com/user-attachments/assets/0a1e93e8-caea-4435-a56b-99be0f317882" />
 
 > Note: If your .hyp file is in a descendant folder (a descendant folder where `esohype.exe` is located), for example, the folder `/examples`, then for the script path you would just type `examples/<name>.hyp`, for example: `examples/fibonacci.hyp`.
 
