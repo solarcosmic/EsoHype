@@ -1,3 +1,5 @@
+> You can also find this guide on the Wiki ([How to Run or Install EsoHype](https://github.com/solarcosmic/EsoHype/wiki/How-to-Run-or-Install-EsoHype))
+
 ## How to Run
 Want to run EsoHype? Intrigued by the language itself? Feel free to read this guide!
 
