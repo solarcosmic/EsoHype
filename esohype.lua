@@ -5,6 +5,7 @@
 ]]
 local doc
 local isExec = false
+local all_lines = {}
 if arg[1] == nil then
     print("Lua binary usage: lua esohype.lua <name>.hyp | Executable usage: esohype <name>.hyp")
     print("")
@@ -21,6 +22,10 @@ if arg[1] == nil then
                 print(" === Error: Invalid file. Please check to make sure the file is correct.")
             else
                 isExec = true
+                for line in doc:lines() do
+                    table.insert(all_lines, line)
+                end
+                doc:close()
                 print("=== EXECUTING SCRIPT ===")
                 break
             end
@@ -28,7 +33,12 @@ if arg[1] == nil then
     end
 else
     doc = io.open(arg[1], "r")
+    for line in doc:lines() do
+        table.insert(all_lines, line)
+    end
+    doc:close()
 end
+
 if doc == nil then print(" === Error: Invalid file. Please check to make sure the file is correct. Usage: lua esohype.lua <name>.hyp") return end
 --io.input(doc)
 
@@ -324,9 +334,29 @@ function eval_repeat_indefinitely(tokens)
     end
 end
 
-function eval_if(tokens, local_vars)
-    local please = tokens[#tokens]
+function collect_if_block(lines, start_idx)
+    local block_lines = {}
+    local nesting = 1
+    local idx = start_idx
+    while idx <= #lines do
+        local line = lines[idx]
+        local tokens = loopTokens(line)
+        if tokens[1] and tokens[1]:lower() == "if" then
+            nesting = nesting + 1
+        elseif tokens[1] and tokens[1]:lower() == "endif" then
+            nesting = nesting - 1
+            if nesting == 0 then
+                return block_lines, idx
+            end
+        end
+        table.insert(block_lines, line)
+        idx = idx + 1
+    end
+    return block_lines, idx
+end
 
+function eval_if(lines, idx, tokens, local_vars)
+    local please = tokens[#tokens]
     local condition_tokens = {}
     for i = 2, #tokens-1 do
         local t = tokens[i]
@@ -338,40 +368,26 @@ function eval_if(tokens, local_vars)
             table.insert(condition_tokens, t)
         end
     end
-
     local condexpr = table.concat(condition_tokens, " ")
     local chunk, err = load("return "..condexpr, "expr", "t", {math=math})
     if not chunk then
         print(" === Error on line "..line_count..": Invalid condition expression \""..condexpr.."\"")
-        return
+        return idx + 1
     end
-
     local success, result = pcall(chunk)
     if not success then
         print(" === Error on line "..line_count..": Failed to evaluate condition \""..condexpr.."\"")
-        return
+        return idx + 1
     end
-
     local condition_true = result and true or false
-
-    local block_lines = {}
-    for extra_line in doc:lines() do
-        local extra_tokens = loopTokens(extra_line)
-        if extra_tokens[1] and extra_tokens[1]:lower() == "endif" then
-            break
-        else
-            table.insert(block_lines, extra_line)
-        end
-    end
+    local block_lines, next_idx = collect_if_block(lines, idx + 1)
     if condition_true then
-        for _, block_line in ipairs(block_lines) do
-            local clone_if = loopTokens(block_line)[1]
-            if clone_if and clone_if:lower() == "if" then
-                print(" =!= Warn: If statement detected in another if statement. Nested if statement blocks will be ignored, but their contents may still run.")
-            end
-            processLine(block_line, local_vars)
+        local block_idx = 1
+        while block_idx <= #block_lines do
+            block_idx = processLine(block_lines, block_idx, local_vars)
         end
     end
+    return next_idx + 1
 end
 
 function loopTokens(line) -- i don't know what i'm reading anymore
@@ -413,7 +429,8 @@ local lineTypes = {
     ["if"] = eval_if
 }
 
-function processLine(line, local_vars)
+function processLine(lines, idx, local_vars)
+    local line = lines[idx]
     local in_quotes = false
     local clean_line = ""
     for i = 1, #line do
@@ -426,14 +443,16 @@ function processLine(line, local_vars)
         clean_line = clean_line .. c
     end
     local trimmed = clean_line:match("^%s*(.-)%s*$")
-    if trimmed == "" then return end
+    if trimmed == "" then return idx + 1 end
     local tokens = loopTokens(trimmed)
     if not polite_check(tokens, #tokens) then
         print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
-        return
+        return idx + 1
     end
     local lineType = getLineType(tokens)
-    if lineType then
+    if lineType == "if" then
+        return eval_if(lines, idx, tokens, local_vars)
+    elseif lineType then
         local fn = lineTypes[lineType]
         if fn then
             fn(tokens, local_vars)
@@ -441,6 +460,7 @@ function processLine(line, local_vars)
             print(" === Error: Unknown line type while parsing: "..lineType)
         end
     end
+    return idx + 1
 end
 
 function getLineType(tokens)
@@ -464,14 +484,15 @@ function getLineType(tokens)
     end
 end
 
-for line in doc:lines() do
-    processLine(line)
+local current_line = 1
+while current_line <= #all_lines do
+    current_line = processLine(all_lines, current_line)
     line_count = line_count + 1
 end
 --for _, varName in ipairs(variable_order) do
 --    print(varName, variables[varName])
 --end
-doc:close()
+--doc:close()
 if isExec == true then
     print("=== SCRIPT END, PRESS ENTER/RETURN TO EXIT ===")
     io.read()

@@ -1,4 +1,10 @@
 can x be 10 pls
 if x > 7 pls
-    display "x is greater than 5!" pls
+    display "x is greater than 7!" pls
+    if x > 5 pls
+        display "x is also greater than 5!" pls
+        if x == 10 pls
+            display "x is equal to 10!" pls
+        endif pls
+    endif pls
 endif pls
