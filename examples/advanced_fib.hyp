@@ -1,0 +1,11 @@
+display "Please enter the number of fibonacci counts:" pls
+can n be input as number pls
+can a be 0 pls
+can b be 1 pls
+display "Executing!" pls
+repeat n times pls
+    display a pls
+    can c be a pls
+    can a be b pls
+    can b be c + b pls
+endrepeat pls
