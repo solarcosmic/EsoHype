@@ -12,7 +12,7 @@ An esoteric programming language written in Lua where you have to have manners.
 Some of these functions are by design and intended to make experimenting with this programming language more difficult.
 
 ## How to Run
-See [How to Run EsoHype - how_to_run.md](https://github.com/solarcosmic/EsoHype/blob/main/how_to_run.md) or the [official Wiki page](https://github.com/solarcosmic/EsoHype/wiki/How-to-Run-or-Install-EsoHype).
+You can find the releases [here](https://github.com/solarcosmic/EsoHype/releases), but for an actual guide, see [How to Run EsoHype - how_to_run.md](https://github.com/solarcosmic/EsoHype/blob/main/how_to_run.md) or the [official Wiki page](https://github.com/solarcosmic/EsoHype/wiki/How-to-Run-or-Install-EsoHype).
 
 ## Manners
 It is required to have `please` or `pls` where it is required on the line, otherwise the interpreter will refuse to parse it. For example:
@@ -238,6 +238,8 @@ However, if you want to display what `x` (the input variable) is, converting it 
 [if_block.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/if_block.hyp) - Basic example of comparing two values
 
 [indefinite_multiply.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/indefinite_multiply.hyp) - Using indefinite repeat blocks to multiply a number
+
+[advanced_fib.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/advanced_fib.hyp) - fibonacci.hyp but requires user input
 
 [nested_repeat.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/nested_repeat.hyp) - Example of nesting repeat blocks
 
