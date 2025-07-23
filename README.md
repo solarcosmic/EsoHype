@@ -3,11 +3,12 @@
 # EsoHype
 An esoteric programming language written in Lua where you have to have manners.
 
+> For Twist (YSWS) if you want to use the version at the end of submission, check here [link] but for the latest commit (recommended) check here [link].
+
 ## Limitations & Constraints
 - Lines must end with `please` or `pls`
-- You cannot nest `if`, `funk`, or `repeat` blocks
+- You cannot nest `funk` or `repeat` blocks (by design)
 - Arithmetic can only be done in variables
-- New lines and comments don't exist for readability purposes, although shown in the docs
 
 Some of these functions are by design and intended to make experimenting with this programming language more difficult.
 
