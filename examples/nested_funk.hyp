@@ -1,0 +1,17 @@
+can x be 11 pls
+funk outer name pls
+    display "This is the outer function!" pls
+    display name pls
+    funk inner value pls
+        display "This is the inner function!" pls
+        display value pls
+        if x > 7 pls
+            display "x is greater than 7!" pls
+            if x > 10 pls
+                display "x is greater than 10!" pls
+            endif pls
+        endif pls
+    endfunk pls
+    call inner "Nested call!" pls
+endfunk pls
+call outer "Hello from outer!" pls

@@ -1,0 +1,9 @@
+can x be 5 pls
+can y be 0 pls
+repeat x times pls
+    display y pls
+    repeat 5 times pls
+        can y be y + 1 pls
+        display y pls
+    endrepeat pls
+endrepeat pls

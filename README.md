@@ -3,11 +3,10 @@
 # EsoHype
 An esoteric programming language written in Lua where you have to have manners.
 
-> For Twist (YSWS) if you want to use the version at the end of submission, check here [link] but for the latest commit (recommended) check here [link].
+> For Twist (YSWS) if you want to use the version at the end of submission, click [here](https://github.com/solarcosmic/EsoHype/tree/75cad8047068225e1667d55c76f958d0589c3ae9), but for the latest commit (recommended: nesting, more stability) click [here](https://github.com/solarcosmic/EsoHype). If you do use the Twist version, do note that system is slightly different - the README can guide you.
 
 ## Limitations & Constraints
 - Lines must end with `please` or `pls`
-- You cannot nest `funk` or `repeat` blocks (by design)
 - Arithmetic can only be done in variables
 
 Some of these functions are by design and intended to make experimenting with this programming language more difficult.
@@ -83,7 +82,7 @@ repeat x times (pls)
     display "This will happen 25 times!" pls
 endrepeat (pls)
 ```
-Repeat loops are blocks of code that repeat a certain amount. They start with `repeat x times` where `x` is the number or variable, and end with `endrepeat`. ***Repeat loops cannot be nested.***
+Repeat loops are blocks of code that repeat a certain amount. They start with `repeat x times` where `x` is the number or variable, and end with `endrepeat`. ***Repeat loops can be nested inside other blocks (e.g. if, funk, repeat) (as of v1.0.1!)***
 
 You may set the repeat count to a number:
 ```py
@@ -134,7 +133,7 @@ The above code will keep multiplying `x` by 2 until stopped (Ctrl+C). After a wh
 *NOTE: **Do not** have a indefinite repeat block without something yielding it! This means, for example, `wait`. Otherwise, this may crash your device.*
 
 ## Functions
-Functions are blocks of code that can be repeated as many times as you wish. ***Functions cannot be nested.***
+Functions are blocks of code that can be repeated as many times as you wish. ***Functions can be nested inside other blocks (e.g. if, funk, repeat) (as of v1.0.1!)***
 
 To define a function, use the keyword `funk`, then the name of the function (e.g. `sum`) followed by the arguments you wish to provide (don't forget `pls` or `please` at the end). For example:
 ```py
@@ -172,7 +171,7 @@ Check out the example here:
 [get_sum.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/get_sum.hyp) - Sum of two numbers using a function
 
 ## If Statements
-An `if` statement compares one value to another, and if it is true, executes code inside the block. ***If statements cannot be nested.***
+An `if` statement compares one value to another, and if it is true, executes code inside the block. ***If statements can be nested inside other blocks (e.g. if, funk, repeat) (as of v1.0.1!)***
 For example:
 ```py
 can x be 10 pls
@@ -240,11 +239,13 @@ However, if you want to display what `x` (the input variable) is, converting it 
 
 [indefinite_multiply.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/indefinite_multiply.hyp) - Using indefinite repeat blocks to multiply a number
 
+[nested_repeat.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/nested_repeat.hyp) - Example of nesting repeat blocks
+
+[nested_funk.hyp](https://github.com/solarcosmic/EsoHype/blob/main/examples/nested_funk.hyp) - A somewhat insane way of nesting
+
 To execute any of these examples in your terminal, simply type `lua esohype.lua examples/<name>.hyp`, for example `lua esohype.lua examples/takeoff.hyp`. This assumes `esohype.lua` is in the same folder as `examples`.
 
-## FAQ
-#### What is nesting and why can't it be done?
-Nesting means to run, for example, functions inside functions. This capability hasn't been created (as of yet), but if anybody would like to contribute (e.g. make a pull request) feel free to do so.
+If you're using Windows/prebuilt binaries, the equivalent is `esohype.exe examples/<name>.hyp`.
 
 ## AI Disclosure
 AI was used to make *some* of the logic, particularly complicated ones like if statements and functions. However, the main base of the programming language was made by me with AI sprinkles on top (basically).

@@ -9,7 +9,7 @@ local all_lines = {}
 if arg[1] == nil then
     print("Lua binary usage: lua esohype.lua <name>.hyp | Executable usage: esohype <name>.hyp")
     print("")
-    print("Welcome to EsoHype!")
+    print("Welcome to EsoHype v1.0.1!")
     print("Please enter the name of the script you would like to use.")
     print("Please make sure that your script is in the **same** directory as EsoHype, or make sure EsoHype is in the top directory.")
     print("To access files in folders, you can do example/script_name.hyp, otherwise do script_name.hyp.");
@@ -229,12 +229,33 @@ function eval_wait(tokens)
     return false
 end
 
-function eval_repeat(tokens)
+function collect_repeat_block(lines, start_idx)
+    local block_lines = {}
+    local nesting = 1
+    local idx = start_idx
+    while idx <= #lines do
+        local line = lines[idx]
+        local tokens = loopTokens(line)
+        if tokens[1] and tokens[1]:lower() == "repeat" then
+            nesting = nesting + 1
+        elseif tokens[1] and tokens[1]:lower() == "endrepeat" then
+            nesting = nesting - 1
+            if nesting == 0 then
+                return block_lines, idx
+            end
+        end
+        table.insert(block_lines, line)
+        idx = idx + 1
+    end
+    return block_lines, idx
+end
+
+function eval_repeat(lines, idx, tokens, local_vars)
     local count = tonumber(tokens[2])
     if not count then
         if variables[tokens[2]] == nil then
             print(" === Variable '"..tokens[2].."' does not exist! EsoHype will pretend the loop isn't there and continue.")
-            return
+            return idx + 1
         end
         local varValue = variables[tokens[2]]
         local numValue = tonumber(varValue)
@@ -242,47 +263,55 @@ function eval_repeat(tokens)
             count = numValue
         else
             print(" === Variable '"..tokens[2].."' is not a qualified number!")
-        end
-    end
-    
-    local block_lines = {}
-    for extra_line in doc:lines() do
-        local extra_tokens = loopTokens(extra_line)
-        if extra_tokens[1]:lower() == "endrepeat" then
-            break
-        else
-            table.insert(block_lines, extra_line)
+            return idx + 1
         end
     end
 
+    local block_lines, next_idx = collect_repeat_block(lines, idx + 1)
     for i = 1, count do
-        for _, block_line in ipairs(block_lines) do
-            processLine(block_line)
+        local block_idx = 1
+        while block_idx <= #block_lines do
+            block_idx = processLine(block_lines, block_idx, local_vars)
         end
     end
+    return next_idx + 1
+end
+
+function collect_function_block(lines, start_idx)
+    local block_lines = {}
+    local nesting = 1
+    local idx = start_idx
+    while idx <= #lines do
+        local line = lines[idx]
+        local tokens = loopTokens(line)
+        if tokens[1] and tokens[1]:lower() == "funk" then
+            nesting = nesting + 1
+        elseif tokens[1] and tokens[1]:lower() == "endfunk" then
+            nesting = nesting - 1
+            if nesting == 0 then
+                return block_lines, idx
+            end
+        end
+        table.insert(block_lines, line)
+        idx = idx + 1
+    end
+    return block_lines, idx
 end
 
 local functions = {}
 local function_block_lines = {}
-function eval_function(tokens)
+function eval_function(lines, idx, tokens, local_vars)
     local fn_name = tokens[2]
     local fn_params = {}
     for i = 4, #tokens do
         table.insert(fn_params, tokens[i-1]) -- remove "pls" argument
     end
-    function_block_lines = {}
-    for extra_line in doc:lines() do
-        local extra_tokens = loopTokens(extra_line)
-        if extra_tokens[1] and extra_tokens[1]:lower() == "endfunk" then
-            break
-        else
-            table.insert(function_block_lines, extra_line)
-        end
-    end
+    local block_lines, next_idx = collect_function_block(lines, idx + 1)
     functions[fn_name] = {
         params = fn_params,
-        body = function_block_lines
+        body = block_lines
     }
+    return next_idx + 1
 end
 
 function eval_function_call(tokens)
@@ -308,8 +337,10 @@ function eval_function_call(tokens)
             variables[v] = argt
         end
     end
-    for w, x in ipairs(functions[fn_name]["body"]) do
-        processLine(x, local_vars)
+    local body = functions[fn_name]["body"]
+    local block_idx = 1
+    while block_idx <= #body do
+        block_idx = processLine(body, block_idx, local_vars)
     end
     --for _, item in pairs(function_block_lines) do
     --    processLine(item)
@@ -452,6 +483,10 @@ function processLine(lines, idx, local_vars)
     local lineType = getLineType(tokens)
     if lineType == "if" then
         return eval_if(lines, idx, tokens, local_vars)
+    elseif lineType == "repeat" then
+        return eval_repeat(lines, idx, tokens, local_vars)
+    elseif lineType == "function" then
+        return eval_function(lines, idx, tokens, local_vars)
     elseif lineType then
         local fn = lineTypes[lineType]
         if fn then
