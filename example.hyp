@@ -5,4 +5,4 @@ funk announce name pls
     display x pls
     display name pls
 endfunk pls
-call announce "Dr. Sigma" pls
+call announce "Dr. Sigma" pls         # calls dr sigma

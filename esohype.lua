@@ -414,7 +414,20 @@ local lineTypes = {
 }
 
 function processLine(line, local_vars)
-    local tokens = loopTokens(line)
+    local in_quotes = false
+    local clean_line = ""
+    for i = 1, #line do
+        local c = line:sub(i,i)
+        if c == '"' then
+            in_quotes = not in_quotes
+        elseif c == '#' and not in_quotes then
+            break
+        end
+        clean_line = clean_line .. c
+    end
+    local trimmed = clean_line:match("^%s*(.-)%s*$")
+    if trimmed == "" then return end
+    local tokens = loopTokens(trimmed)
     if not polite_check(tokens, #tokens) then
         print(" === Error on line "..line_count..": Not parsing this. Please mind your manners next time.")
         return
