@@ -2,6 +2,7 @@
 
 # EsoHype
 An esoteric programming language written in Lua where you have to have manners.
+Latest version: v1.0.1.
 
 > For Twist (YSWS) if you want to use the version at the end of submission, click [here](https://github.com/solarcosmic/EsoHype/tree/75cad8047068225e1667d55c76f958d0589c3ae9), but for the latest commit (recommended: nesting, more stability) click [here](https://github.com/solarcosmic/EsoHype). If you do use the Twist version, do note that system is slightly different - the README can guide you.
 
